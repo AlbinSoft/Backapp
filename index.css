@@ -1,0 +1,72 @@
+
+body {
+	max-width: 375px;
+	margin: 0px;
+}
+.board {
+	padding: 10px;
+	background: #F0F0F0;
+}
+
+.tabs_nav {
+	display: flex;
+	gap: 20px;
+	flex-flow: row;
+	justify-content: center;
+	margin: 0px 0px 20px 0px;
+}
+.tabs_nav span {
+	border-bottom: 1px solid gray;
+	cursor: pointer;
+}
+.tabs_nav span.sel {
+	border-bottom: 1px solid blue;
+}
+
+.places_cont {
+	position: relative;
+}
+
+.places_list {
+	display: flex;
+	flex-flow: column;
+	gap: 10px;
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+.places_item {
+	margin : 0px;
+	padding: 5px 8px;
+	background: #FFFFFF;
+	border-radius: 10px;
+}
+.places_item p {
+	margin: 0px;
+}
+.places_item svg {
+	display: inline-block;
+	width : 16px;
+	height: 16px;
+	margin : 0px 5px 0px 0px;
+}
+
+.places_add {
+	margin : 0px;
+	padding: 5px 8px;
+	background: #FFFFFF;
+	border-radius: 10px;
+}
+
+.places_btnadd {
+	position: absolute;
+	bottom: 0px;
+	right : 0px;
+	width : 32px;
+	height: 32px;
+	color: #FFFFFF;
+	background: blueviolet;
+	border: unset;
+	border-radius: 100%;
+	cursor: pointer;
+}

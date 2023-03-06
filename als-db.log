@@ -1,0 +1,125 @@
+﻿2023-03-03 11:39:00 UPDATE t_places SET `location`='q123',`device`='q123',`drive`=null,`path`=null WHERE `id_place`=null;
+2023-03-03 11:39:00 done 116 µs
+2023-03-03 11:39:31 UPDATE t_places SET `location`='q123',`device`='q123',`drive`=null,`path`=null WHERE `id_place`='644';
+2023-03-03 11:39:31 done 98,864 µs
+2023-03-03 11:39:36 SELECT * FROM t_places WHERE 1 
+2023-03-03 11:39:36 done 115 µs
+2023-03-03 11:39:36 
+                    		SELECT
+                    			r.id_relation,
+                    			r.id_place_src,
+                    			r.id_place_trg,
+                    			r.agent,
+                    			r.frequency,
+                    			psrc.location location_src,
+                    			psrc.device device_src,
+                    			psrc.drive drive_src,
+                    			psrc.path path_src,
+                    			ptrg.location location_trg,
+                    			ptrg.device device_trg,
+                    			ptrg.drive drive_trg,
+                    			ptrg.path path_trg,
+                    			1
+                    		FROM t_relations r
+                    		JOIN t_places psrc ON r.id_place_src=psrc.id_place
+                    		JOIN t_places ptrg ON r.id_place_trg=ptrg.id_place
+                    		WHERE 1
+                    	
+2023-03-03 11:39:36 done 144 µs
+2023-03-03 11:39:36 SELECT tag FROM t_places_tags WHERE id_place=1
+2023-03-03 11:39:36 done 76 µs
+2023-03-03 11:39:36 SELECT tag FROM t_places_tags WHERE id_place=2
+2023-03-03 11:39:36 done 67 µs
+2023-03-03 11:39:36 SELECT tag FROM t_places_tags WHERE id_place=644
+2023-03-03 11:39:36 done 57 µs
+2023-03-03 11:39:37 SELECT * FROM t_places WHERE 1 
+2023-03-03 11:39:37 done 188 µs
+2023-03-03 11:39:37 
+                    		SELECT
+                    			r.id_relation,
+                    			r.id_place_src,
+                    			r.id_place_trg,
+                    			r.agent,
+                    			r.frequency,
+                    			psrc.location location_src,
+                    			psrc.device device_src,
+                    			psrc.drive drive_src,
+                    			psrc.path path_src,
+                    			ptrg.location location_trg,
+                    			ptrg.device device_trg,
+                    			ptrg.drive drive_trg,
+                    			ptrg.path path_trg,
+                    			1
+                    		FROM t_relations r
+                    		JOIN t_places psrc ON r.id_place_src=psrc.id_place
+                    		JOIN t_places ptrg ON r.id_place_trg=ptrg.id_place
+                    		WHERE 1
+                    	
+2023-03-03 11:39:37 done 191 µs
+2023-03-03 11:39:37 SELECT tag FROM t_places_tags WHERE id_place=1
+2023-03-03 11:39:37 done 91 µs
+2023-03-03 11:39:37 SELECT tag FROM t_places_tags WHERE id_place=2
+2023-03-03 11:39:37 done 61 µs
+2023-03-03 11:39:37 SELECT tag FROM t_places_tags WHERE id_place=644
+2023-03-03 11:39:37 done 69 µs
+2023-03-03 11:42:06 SELECT * FROM t_places WHERE 1 
+2023-03-03 11:42:06 done 112 µs
+2023-03-03 11:42:06 
+                    		SELECT
+                    			r.id_relation,
+                    			r.id_place_src,
+                    			r.id_place_trg,
+                    			r.agent,
+                    			r.frequency,
+                    			psrc.location location_src,
+                    			psrc.device device_src,
+                    			psrc.drive drive_src,
+                    			psrc.path path_src,
+                    			ptrg.location location_trg,
+                    			ptrg.device device_trg,
+                    			ptrg.drive drive_trg,
+                    			ptrg.path path_trg,
+                    			1
+                    		FROM t_relations r
+                    		JOIN t_places psrc ON r.id_place_src=psrc.id_place
+                    		JOIN t_places ptrg ON r.id_place_trg=ptrg.id_place
+                    		WHERE 1
+                    	
+2023-03-03 11:42:06 done 148 µs
+2023-03-03 11:42:06 SELECT tag FROM t_places_tags WHERE id_place=1
+2023-03-03 11:42:06 done 74 µs
+2023-03-03 11:42:06 SELECT tag FROM t_places_tags WHERE id_place=2
+2023-03-03 11:42:06 done 64 µs
+2023-03-03 11:42:06 SELECT tag FROM t_places_tags WHERE id_place=644
+2023-03-03 11:42:06 done 59 µs
+2023-03-03 11:42:07 DELETE FROM t_places WHERE id_place='644';
+2023-03-03 11:42:07 DELETE FROM t_places WHERE id_place='644';
+2023-03-03 11:42:07 done 115,385 µs
+2023-03-03 11:42:08 SELECT * FROM t_places WHERE 1 
+2023-03-03 11:42:08 done 145 µs
+2023-03-03 11:42:08 
+                    		SELECT
+                    			r.id_relation,
+                    			r.id_place_src,
+                    			r.id_place_trg,
+                    			r.agent,
+                    			r.frequency,
+                    			psrc.location location_src,
+                    			psrc.device device_src,
+                    			psrc.drive drive_src,
+                    			psrc.path path_src,
+                    			ptrg.location location_trg,
+                    			ptrg.device device_trg,
+                    			ptrg.drive drive_trg,
+                    			ptrg.path path_trg,
+                    			1
+                    		FROM t_relations r
+                    		JOIN t_places psrc ON r.id_place_src=psrc.id_place
+                    		JOIN t_places ptrg ON r.id_place_trg=ptrg.id_place
+                    		WHERE 1
+                    	
+2023-03-03 11:42:08 done 200 µs
+2023-03-03 11:42:08 SELECT tag FROM t_places_tags WHERE id_place=1
+2023-03-03 11:42:08 done 108 µs
+2023-03-03 11:42:08 SELECT tag FROM t_places_tags WHERE id_place=2
+2023-03-03 11:42:08 done 53 µs

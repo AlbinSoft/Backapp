@@ -1,0 +1,10 @@
+Assets construct for /backups/
+Add Path #10 /var/www/prj5/backups/
+init
+Add CSS file: 10 common.css
+Add CSS file: 10 index.css
+Add JS file: 10 common.js
+...trying common.css at /var/www/prj5/backups/ : no
+...trying index.css at /var/www/prj5/backups/ : sí
+...trying common.js at /var/www/prj5/backups/ : sí
+Lets go
