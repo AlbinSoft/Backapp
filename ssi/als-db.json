@@ -1,9 +1,9 @@
 {
-    "5.39.72.20": {
+    "default": {
     	"host": "localhost", 
-    	"name":"AlbinBackups", 
-    	"user":"prjuser", 
-    	"pass": "sql2play", 
+    	"name":"Backapp", 
+    	"user":"", 
+    	"pass": "", 
     	"log_name": "als-db", 
     	"log_path": "als-db.log", 
     	"log_on": true, 
