@@ -8,7 +8,6 @@
 		use \EngineFwk\EnginePaths;
 
 		static $logs   = [];
-		static $tree   = [];
 		static $config = null;
 
 		static function get($name, $reset = null) {
@@ -38,8 +37,8 @@
 		}
 
 		static function render() {
-			if(class_exists('\Arrakis\Assets')) {
-				$assets = \Arrakis\Assets::getInstance();
+			if(class_exists('\EngineFwk\Assets')) {
+				$assets = \EngineFwk\Assets::getInstance();
 				$assets->add_css_file(15, 'EngineFwk/logger.css');
 				$assets->add_js_file (15, 'EngineFwk/logger.js');
 			}
@@ -55,35 +54,30 @@
 			?></div><?
 		}
 
-/*		TODO: aislar de WP
 		static function error($code, $message, $trace=null) {
-			$config  = \Arrakis\Config::getInstance();
-			$url     = $config->elog_url ?? 'https://elog.albinsoft.es/';
+			$url     = 'https://elog.albinsoft.es/';
 			$website = $_SERVER['HTTP_HOST'];
-			$resp    = wp_remote_post($url, [
-				'method'      => 'POST',
-				'timeout'     => 45,
-				'redirection' => 5,
-				'httpversion' => '1.0',
-				'blocking'    => true,
-				'headers'     => [],
-				'body'        => [
-					'website' => $website,
-					'code'    => $code,
-					'message' => $message,
-					'trace'   => $trace,
-				],
-				'cookies'     => []
-			]);
-			if(is_wp_error($resp)) {
+			if(class_exists('\EngineFwk\HTTP')) {
+				$resp = \EngineFwk\HTTP::exec([
+					'url'          => $url,
+					'method'       => 'POST',
+					'headers'      => [],
+					'payload'      => [
+						'website' => $website,
+						'code'    => $code,
+						'message' => $message,
+						'trace'   => $trace,
+					],
+				]);
+			}
+			if(empty($resp)) {
 				$elog = self::get('elog');
-				$elog->line($resp->get_error_message());
+				$elog->line('elog failed');
 			} else {
 				$elog = self::get('elog');
 				$elog->line($resp);
 			}
 		}
-*/
 
 		protected $path     = null;
 		protected $virgin   = null;
@@ -91,13 +85,21 @@
 		protected $depth    = 0;
 		protected $display  = false;
 		protected $disabled = false;
-		protected $idle     = true;	// still not used > no need to write
+		protected $idle     = true;		// still not used > no need to write
 		private   $otf      = '';		// OnTheFly (still not written)
 		protected $memlog   = '';
 
 		protected function __construct($params) {
 			$name = $depth = $reset = $config = null;
-			extract($params, EXTR_IF_EXISTS);
+			if(count($params)>0) {
+				if(is_array($params[0])) {
+					extract($params[0], EXTR_IF_EXISTS);
+				} else {
+					$name  = $params[0] ?? '';
+					$depth = $params[1] ?? 0;
+					$reset = $params[2] ?? false;
+				}
+			}
 			$this->name    = $name;
 			$this->depth   = $depth;
 			$this->reset   = $reset;
@@ -120,7 +122,7 @@
 		}
 
 		public function set_path($path) {
-			if($this->depth!==0) return; // TODO Throw an Exception? Call parent? (it's not being saved)
+			if($this->depth!==0) throw new \Exception('Sublogs cannot have a different path than its parents');
 			if(is_dir($path)) {
 				$path = rtrim($path, '/')."/{$this->name}.log";
 			}
@@ -134,7 +136,7 @@
 		public function backup() {
 		//	if($this->depth!==0) return; // TODO Throw an Exception?
 			if(file_exists($this->path)) {
-				$path_bak = pathinfo($this->path, PATHINFO_DIRNAME).'/'.pathinfo($this->path, PATHINFO_FILENAME).'-'.date('Ymdhi').'.bak';
+				$path_bak = pathinfo($this->path, PATHINFO_DIRNAME).'/'.pathinfo($this->path, PATHINFO_FILENAME).'-'.date('YmdHi').'.bak';
 				rename($this->path, $path_bak);
 			}
 			return $this;
@@ -276,14 +278,24 @@
 
 		public function avar($a) {
 			if(is_array($a)) {
-				$lines = [];
-				foreach($a as $k=>$v) {
-					$lines[] = "[$k] $v";
-				}
-				return $this->writeln($lines);
+				return $this->array($a);
 			}
 			return $this->var($s);
 		}
+
+
+
+		public function array($a) {
+			foreach($a as $k=>$v) {
+				$d  = '                    ';
+				$t  = str_repeat('   ', $this->depth);
+				$s  = "[$k] $v";
+				$this->writeln($d.$t.$s);
+			}
+			return $this;
+		}
+
+
 
 		public function csv($param, $nl = false) {
 			if(is_array($param)) {
@@ -300,6 +312,8 @@
 			}
 			return $this->var($s);
 		}
+
+
 
 		public function qs($param, $nl = false) {
 			if(is_array($param)) {

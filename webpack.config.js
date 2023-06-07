@@ -25,11 +25,27 @@ module.exports = {
 				use: {
 					loader: "babel-loader"
 				}
+			},
+			{
+			//	test: /\.(css)$/,
+			//	exclude: /node_modules/,
+			//	use: ["style-loader", "css-loader"]
+				test: /\.css$/,
+				use: [
+					"style-loader",
+					{
+						loader: "css-loader?modules=true&camelCase=true",
+						options: {
+							importLoaders: 1,
+							modules: true,
+						},
+					}
+				]
 			}
 		],
 	},
 	resolve: {
-		extensions: ['.js', '.json', '.jsx'],
+		extensions: ['.js', '.json', '.jsx', '.css'],
 		modules: [
 			path.resolve(__dirname, 'src'),
 			'node_modules'

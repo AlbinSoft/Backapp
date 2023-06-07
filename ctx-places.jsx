@@ -1,48 +1,46 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer } from 'react';
+import URLs from './URLs';
 
 const PlacesContext = React.createContext({
 	redState: initPlaces,
 	dispatchRedState: () => {},
+	filterByLocation: () => {},
+	filterByDevice:   () => {},
+	filterByDrive:    () => {},
+	filterByPath:     () => {},
+	filterBy:         () => {},
+	listLocations:    () => {},
+	listDevices:      () => {},
+	listDrives:       () => {},
+	listPaths:        () => {},
 });
 
 const PlacesContextProvider = (props) => {
 
 	const [redState, dispatchRedState] = useReducer(
 		(prevState, action) => {
-			let newState;
+			let newState, item, value;
 			switch(action.type) {
 				case 'ADD':
-					action.item.alter = 'ins';
-					newState = [...prevState];
-					newState.push(action.item);
+					newState = new Map(prevState);
+					newState.set(action.item.id_place, {...action.item, alter: 'ins'});
 					return newState;
 				break;
 				case 'UPD':
-					newState = [...prevState];
-					newState = newState.map(item => {
-						if(item.id_place==action.item.id_place) {
-							if(!item.alter || item.alter===false) {
-								item.alter = 'upd';
-							}
-							return {...item, ...action.item};
-						}
-						return item;
-					});
+					item  = prevState.get(action.item.id_place);
+					value = {...item, ...action.item, alter: 'upd'};
+					newState = new Map(prevState);
+					newState.set(action.item.id_place, value);
 					return newState;
 				break;
 				case 'DEL':
-					newState = [...prevState];
-					newState = newState.map(item => {
-						if(item.id_place==action.id) {
-							if(item!=='ins') {
-								item.alter = 'del';
-							}
-						}
-						return item;
-					});
+					item  = prevState.get(action.id);
+					value = {...item, alter: 'del'};
+					newState = new Map(prevState);
+					newState.set(action.id, value);
 					return newState;
 				break;
-				case 'RESET':
+				case 'RESET' && action.nids.length && action.oids.length:
 					const nids = Object.keys(action.nids || {});
 					newState = [...prevState];
 					newState = newState.map(item => {
@@ -58,25 +56,79 @@ const PlacesContextProvider = (props) => {
 		initPlaces,
 	);
 
+	const orderByName = (a, b) => {
+		if(a.name<b.name) return -1;
+		if(a.name>b.name) return +1;
+		return 0;
+	};
+
+	const getPlaces = useCallback((params) => {
+		const values = Array.from(redState.values());
+		return values.sort(orderByName);
+	}, [redState]);
+
+	const filterByLocation = useCallback((id_src) => {
+		const values = Array.from(redState.values()).filter(i => {
+			return i.id_place_src == id_src;
+		});
+		return values;
+	}, [redState]);
+
+	const filterBy = useCallback((params) => {
+		const values = getPlaces().filter(i => {
+			let keep = true;
+			if(params.location && params.location!==i.location) keep = false;
+			if(params.device   && params.device  !==i.device)   keep = false;
+			if(params.drive    && params.drive   !==i.drive)    keep = false;
+			if(params.path     && params.path    !==i.path)     keep = false;
+			return keep;
+		});
+		return values;
+	}, [redState])
+
+	const listLocations = useCallback(() => {
+		const items = new Set();
+		redState.forEach(i => items.add(i.location));
+		return [...items].sort();
+	}, [redState]);
+
+	const listDevices = useCallback(() => {
+		const items = new Set();
+		redState.forEach(i => items.add(i.device));
+		return [...items].sort();
+	}, [redState]);
+
+	const listDrives = useCallback(() => {
+		const items = new Set();
+		redState.forEach(i => items.add(i.drive));
+		return [...items].sort();
+	}, [redState]);
+
+	const listPaths = useCallback(() => {
+		const items = new Set();
+		redState.forEach(i => items.add(i.path));
+		return [...items].sort();
+	}, [redState]);
+
 	const value = {
 		redState,
 		dispatchRedState,
-		get_pairs: function () {
-			const pairs = [];
-			redState.map(place => 
-				pairs.push({ id: place.id_place, label: place.location+' '+place.device+' '+place.drive+' '+place.path })
-			);
-			return pairs;
-		}
+		getPlaces,
+		filterByLocation,
+		filterBy,
+		listLocations,
+		listDevices,
+		listDrives,
+		listPaths,
 	};
 
 	useEffect(() => {
-		var places = redState.filter(place => place.alter!==false);
+		var places = getPlaces().filter(place => place.alter!==false);
 		if(places.length) {
 			var fdata = new FormData();
 			fdata.append('action', 'set_places');
 			fdata.append('places', JSON.stringify(places));
-			fetch('index.php', { body: fdata, method: 'POST' }).then(resp => resp.json()).then(data => {
+			fetch(URLs.ajax(), { body: fdata, method: 'POST' }).then(resp => resp.json()).then(data => {
 				if(data.ok) {
 					const oids = [];
 					const nids = data.ids;

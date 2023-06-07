@@ -3,7 +3,7 @@
 	error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED);
 	ini_set('display_errors', '1');
 
-	define('URL_ROOT',       'http://'.$_SERVER['HTTP_HOST'].'/backups/');
+	define('URL_ROOT',       'https://'.$_SERVER['HTTP_HOST'].'/backups/');
 	define('PATH_ROOT',      dirname(dirname(__FILE__)).'/');
 	define('PATH_TEMP',      PATH_ROOT.'tmp/');
 	define('PATH_LOGS',      PATH_ROOT); // .'logs/');

@@ -5,12 +5,12 @@ npm install --save-dev webpack webpack-cli webpack-dev-server
 npm i -D webpack webpack-cli webpack-dev-server
 
 npm i -D webpack webpack-cli
-npm i -D babel-loader @babel/core @babel/preset-env @babel/preset-react
 
-npm install --save react react-dom
+npm install --save-dev react react-dom
 npm i -D react react-dom
 
-npm install --save-dev @babel/preset-react
+npm i -D babel-loader @babel/core @babel/preset-env @babel/preset-react
+
 
 
 

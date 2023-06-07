@@ -6,7 +6,7 @@
 
 	$assets = \EngineFwk\Assets::getInstance();
 	$assets->add_css('common.css');
-	$assets->add_css('index.css');
+//	$assets->add_css('index.css');
 	$assets->add_js('common.js');
 
 	if(ACTION=='set_places') {
@@ -18,19 +18,23 @@
 		if(is_array($places)) foreach($places as $place) switch($place->alter) {
 			case 'ins':
 				$db->insert('t_places', [
-					'location' => $place->location,
-					'device'   => $place->device,
-					'drive'    => $place->drive,
-					'path'     => $place->path,
+					'name'     => $place->name     ?? null,
+					'location' => $place->location ?? null,
+					'device'   => $place->device   ?? null,
+					'drive'    => $place->drive    ?? null,
+					'path'     => $place->path     ?? null,
+					'notes'    => $place->notes    ?? null,
 				]);
 				$ids[$place->id_place] = $db->insert_id();
 			break;
 			case 'upd':
 				$db->uidata('t_places', [
-					'location' => $place->location,
-					'device'   => $place->device,
-					'drive'    => $place->drive,
-					'path'     => $place->path,
+					'name'     => $place->name     ?? null,
+					'location' => $place->location ?? null,
+					'device'   => $place->device   ?? null,
+					'drive'    => $place->drive    ?? null,
+					'path'     => $place->path     ?? null,
+					'notes'    => $place->notes    ?? null,
 				], [
 					'id_place' => $place->id_place
 				]);
@@ -53,15 +57,23 @@
 		if(is_array($backups)) foreach($backups as $backup) switch($backup->alter) {
 			case 'ins':
 				$db->insert('t_relations', [
-					'id_place_src' => $backup->id_place_src,
-					'id_place_trg' => $backup->id_place_trg,
+					'name'         => $backup->name         ?? null,
+					'id_place_src' => $backup->id_place_src ?? 0,
+					'id_place_trg' => $backup->id_place_trg ?? 0,
+					'agent'        => $backup->agent        ?? null,
+					'frequency'    => $backup->frequency    ?? null,
+					'notes'        => $backup->notes        ?? null,
 				]);
 				$ids[$backup->id_relation] = $db->insert_id();
 			break;
 			case 'upd':
 				$db->uidata('t_relations', [
-					'id_place_src' => $backup->id_place_src,
-					'id_place_trg' => $backup->id_place_trg,
+					'name'         => $backup->name         ?? null,
+					'id_place_src' => $backup->id_place_src ?? 0,
+					'id_place_trg' => $backup->id_place_trg ?? 0,
+					'agent'        => $backup->agent        ?? null,
+					'frequency'    => $backup->frequency    ?? null,
+					'notes'        => $backup->notes        ?? null,
 				], [
 					'id_relation' => $backup->id_relation
 				]);
@@ -75,22 +87,26 @@
 		die(json_encode($resp));
 	}
 
-	$places  = $db->get_rows("SELECT * FROM t_places WHERE 1 ");
-	$backups = $db->get_rows("
+	$places  = $db->get_krows("SELECT * FROM t_places WHERE 1 ");
+	$backups = $db->get_krows("
 		SELECT
 			r.id_relation,
+			r.name,
 			r.id_place_src,
 			r.id_place_trg,
 			r.agent,
 			r.frequency,
-			psrc.location location_src,
-			psrc.device device_src,
-			psrc.drive drive_src,
-			psrc.path path_src,
-			ptrg.location location_trg,
-			ptrg.device device_trg,
-			ptrg.drive drive_trg,
-			ptrg.path path_trg,
+			r.notes,
+			psrc.name      name_src,
+			psrc.location  location_src,
+			psrc.device    device_src,
+			psrc.drive     drive_src,
+			psrc.path      path_src,
+			ptrg.name      name_trg,
+			ptrg.location  location_trg,
+			ptrg.device    device_trg,
+			ptrg.drive     drive_trg,
+			ptrg.path      path_trg,
 			1
 		FROM t_relations r
 		JOIN t_places psrc ON r.id_place_src=psrc.id_place
@@ -99,23 +115,22 @@
 	");
 
 	foreach($places as &$place) {
+	//	$place->id_place = (int) $place->id_place;
 		$place->tags = $db->get_values("SELECT tag FROM t_places_tags WHERE id_place={$place->id_place}");
 		$place->alter = false;
 		unset($place);
 	}
 
 	foreach($backups as &$backup) {
+	//	$backup->id_relation  = (int) $backup->id_relation;
+	//	$backup->id_place_src = (int) $backup->id_place_src;
+	//	$backup->id_place_trg = (int) $backup->id_place_trg;
 		$backup->alter = false;
 		unset($backup);
 	}
 
 /*
 	$trans = lits('stock_list.');
-
-	$bcrumb = \EngineFwk\Breadcrumb::instance();
-	$bcrumb->add(lit('nav.home'),        Urls::Home());
-	$bcrumb->add(lit('rma_list.bcrumb'), Urls::RMACasesList());
-	$bcrumb->add(lit('rma_edit.bcrumb'), null);
 */
 
 ?>
@@ -128,26 +143,31 @@
 	<link rel="icon" href="<?=URL_ROOT ?>favicon.ico" type="image/x-icon" />
 	<!-- SusiPlate header -->
 </head>
-<body>
+<body data-urlbase="<?=URL_ROOT ?>">
 	<? include('inc-header.php') ?>
 
-	<main id="react-root" class="board">
-
-	</main>
+	<div id="react-root" class="board"></div>
 
 	<? include('inc-footer.php') ?>
 
 <!-- SusiPlate footer -->
 <script type="text/javascript">
-var initPlaces  = <?=json_encode($places) ?>;
-var initBackups = <?=json_encode($backups) ?>;
+var jsonPlaces  = <?=json_encode($places)  ?>;
+var jsonBackups = <?=json_encode($backups) ?>;
+var initPlaces  = new Map();
+var initBackups = new Map();
 var fback;
 
-import('<?=url('notifications.js') ?>').then(fback => {
-	window.fback = fback.default;
-});
+for(id in jsonPlaces) initPlaces.set(id, jsonPlaces[id]);
+for(id in jsonBackups) initBackups.set(id, jsonBackups[id]);
+
+import('<?=url('index.js') ?>');
+
+//	import('<?=url('notifications.js') ?>').then(fback => {
+//	window.fback = fback.default;
+//	});
 </script>
-<script src="index.js"></script>
+<!--script src="<?=url('index.js') ?>"></script-->
 
 </body>
 </html>
