@@ -6,7 +6,6 @@
 
 	$assets = \EngineFwk\Assets::getInstance();
 	$assets->add_css('common.css');
-//	$assets->add_css('index.css');
 	$assets->add_js('common.js');
 
 	if(ACTION=='set_places') {
@@ -129,10 +128,6 @@
 		unset($backup);
 	}
 
-/*
-	$trans = lits('stock_list.');
-*/
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -144,11 +139,8 @@
 	<!-- SusiPlate header -->
 </head>
 <body data-urlbase="<?=URL_ROOT ?>">
-	<? include('inc-header.php') ?>
 
 	<div id="react-root" class="board"></div>
-
-	<? include('inc-footer.php') ?>
 
 <!-- SusiPlate footer -->
 <script type="text/javascript">
@@ -162,12 +154,7 @@ for(id in jsonPlaces) initPlaces.set(id, jsonPlaces[id]);
 for(id in jsonBackups) initBackups.set(id, jsonBackups[id]);
 
 import('<?=url('index.js') ?>');
-
-//	import('<?=url('notifications.js') ?>').then(fback => {
-//	window.fback = fback.default;
-//	});
 </script>
-<!--script src="<?=url('index.js') ?>"></script-->
 
 </body>
 </html>
