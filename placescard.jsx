@@ -29,15 +29,16 @@ const PlacesCard = (props) => {
 		}
 	}, [ctxp, showinfo]);
 
-	return <li key={place.id_place} className="places_item">
-		<p className="places_item_title">{place.name} <span className={'places_item_type'+(is_source ? ' src' : '')+(is_target ? ' trg' : '')}></span></p>
-		<p className="places_item_fld loc"><em>Location</em> {place.location}</p>
-		<p className="places_item_fld dvc"><em>Device</em>   {place.device}</p>
-		<p className="places_item_fld drv"><em>Drive</em>    {place.drive}</p>
-		<p className="places_item_fld pth"><em>Path</em>     {place.path}</p>
+	return <li key={place.id_place} className="cards_item">
+		<p className="cards_item_title">{place.name} <span className={'cards_item_type'+(is_source ? ' src' : '')+(is_target ? ' trg' : '')}></span></p>
+		<p className="cards_item_fld loc"><em>Location</em> {place.location}</p>
+		<p className="cards_item_fld dvc"><em>Device</em>   {place.device}</p>
+		<p className="cards_item_fld drv"><em>Drive</em>    {place.drive}</p>
+		<p className="cards_item_fld pth"><em>Path</em>     {place.path}</p>
 		{ moreinfo }
-		<p className="places_item_btns">
+		<p className="cards_item_btns">
 			<a onClick={ e => props.addPlaceEditer(place.id_place) }>edit</a>
+			<a onClick={ e => props.dupPlace(place.id_place)       }>clone</a>
 			<a onClick={ e => props.remPlace(place.id_place)       }>remove</a>
 			<a onClick={ e => setShowInfo(!showinfo)               }>info</a>
 		</p>

@@ -48,6 +48,10 @@ console.log('filters', filters);
 		setEditing(temp);
 	};
 
+	const dupPlace = (id_place) => {
+		ctxp.dispatchRedState({ type: 'DUP', id_place: id_place });
+	};
+
 	const remPlace = (id_place) => {
 		if(confirm('Are you sure?')) {
 			ctxp.dispatchRedState({ type: 'DEL', id: id_place });
@@ -114,23 +118,24 @@ console.log('filters', filters);
 				<select id="path"     onChange={ e => setFilter('path',     e) } value={filters.path}    >{hpaths}</select>
 			</p>
 		</form>
-		<ul className="places_list">
+		<ul className="cards_list">
 			{ adding }
 			{ places.map(place => {
 				if(!place) return null;
 				if(place.alter==='del') return null;
 				if(editing.includes(place.id_place)) {
 					return <PlacesAdd
-						key={place.id_place}
-						place={place}
-						onClose={v => remPlaceEditer(place.id_place)}
+						key     = {place.id_place}
+						place   = {place}
+						onClose = {v => remPlaceEditer(place.id_place)}
 					/>
 				} else {
 					return <PlacesCard
-						key={place.id_place}
-						place={place}
+						key      = {place.id_place}
+						place    = {place}
 						addPlaceEditer={addPlaceEditer}
-						remPlace={remPlace}
+						dupPlace = {dupPlace}
+						remPlace = {remPlace}
 					/>
 				}
 				return null;

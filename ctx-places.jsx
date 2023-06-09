@@ -33,6 +33,13 @@ const PlacesContextProvider = (props) => {
 					newState.set(action.item.id_place, value);
 					return newState;
 				break;
+				case 'DUP':
+					item  = prevState.get(action.id_place);
+					value = {...item, id_place: 'new'+Math.random().toString().substr(2), alter: 'ins'};
+					newState = new Map(prevState);
+					newState.set(value.id_place, value);
+					return newState;
+				break;
 				case 'DEL':
 					item  = prevState.get(action.id);
 					value = {...item, alter: 'del'};
@@ -40,14 +47,24 @@ const PlacesContextProvider = (props) => {
 					newState.set(action.id, value);
 					return newState;
 				break;
-				case 'RESET' && action.nids.length && action.oids.length:
+				case 'RESET':
+					const oids = action.oids || [];
 					const nids = Object.keys(action.nids || {});
-					newState = [...prevState];
-					newState = newState.map(item => {
-						if(action.oids.includes(item.id_place)) { if(item.alter!='del') item.alter = false; else return null; }
-						if(nids.includes(item.id_place)) { item.alter = false; item.id_place = action.nids[item.id_place]; }
-						return item;
-					}).filter(item => item!==null);
+					if(!nids.length && !oids.length) return prevState;
+					let temp = [...prevState.values()];
+					temp.forEach((item, idx) => {
+						if(action.oids.includes(item.id_place)) {
+							if(item.alter=='del') delete temp[idx]
+							if(item.alter!='del') item.alter = false;
+						}
+						if(nids.includes(item.id_place)) {
+							item.alter = false;
+							item.id_place = action.nids[item.id_place];
+						}
+					});
+					temp = temp.filter(item => item!==null);
+					newState = new Map();
+					temp.map(place => newState.set(place.id_place, place));
 					return newState;
 				break;
 			}
@@ -134,7 +151,6 @@ const PlacesContextProvider = (props) => {
 					const nids = data.ids;
 					places.forEach(place => place.id_place>0 && oids.push(place.id_place));
 					if(oids || nids) {
-console.log('oids || nids', oids, nids);
 						dispatchRedState({ type: 'RESET', nids, oids });
 					}
 				} else {

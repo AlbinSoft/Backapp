@@ -45,8 +45,8 @@ const BackupsAdd = (props) => {
 
 	const save = () => {
 //	console.log('save', ctx_backups);
-		ctx_backups.dispatchRedState({ type: info.id_relation ? 'UPD' : 'ADD', item: {
-			id_relation:  info.id_relation || 'new'+Math.random().toString().substr(2),
+		ctx_backups.dispatchRedState({ type: info.id_backup ? 'UPD' : 'ADD', item: {
+			id_backup:    info.id_backup || 'new'+Math.random().toString().substr(2),
 			name:         info.name,
 			id_place_src: info.id_place_src,
 			id_place_trg: info.id_place_trg,
@@ -61,12 +61,12 @@ const BackupsAdd = (props) => {
 		props.onClose();
 	};
 
-	return <li className="places_item add">
-		<p className="places_item_title">{ props.backup ? 'Modifing' : 'Adding'} &hellip;</p>
-		<p className="places_item_fld tit"><em>Name</em>
+	return <li className="cards_item add">
+		<p className="cards_item_title">{ props.backup ? 'Modifing' : 'Adding'} &hellip;</p>
+		<p className="cards_item_fld tit"><em>Name</em>
 			<input value={ info.name      } onChange={ evt => setInfo({ type: 'set_name', value: evt.target.value }) } />
 		</p>
-		<p className="places_item_fld src"><em>Source</em>
+		<p className="cards_item_fld src"><em>Source</em>
 			<select value={ info.id_place_src } onChange={ evt => setInfo({ type: 'set_place_src', value: evt.target.value }) }>
 				<option value={0}>-</option>
 				{ ctx_places.getPlaces().map(place => {
@@ -74,7 +74,7 @@ const BackupsAdd = (props) => {
 				}) }
 			</select>
 		</p>
-		<p className="places_item_fld trg"><em>Tarjet</em>
+		<p className="cards_item_fld trg"><em>Tarjet</em>
 			<select value={ info.id_place_trg } onChange={ evt => setInfo({ type: 'set_place_trg', value: evt.target.value }) }>
 				<option value={0}>-</option>
 				{ ctx_places.getPlaces().map(place => {
@@ -82,13 +82,13 @@ const BackupsAdd = (props) => {
 				}) }
 			</select>
 		</p>
-		<p className="places_item_fld agt"><em>Agent</em>
+		<p className="cards_item_fld agt"><em>Agent</em>
 			<input value={ info.agent     } onChange={ evt => setInfo({ type: 'set_agent',     value: evt.target.value }) } />
 		</p>
-		<p className="places_item_fld frq"><em>Frequency</em>
+		<p className="cards_item_fld frq"><em>Frequency</em>
 			<input value={ info.frequency } onChange={ evt => setInfo({ type: 'set_frequency', value: evt.target.value }) } />
 		</p>
-		<p className="places_item_btns">
+		<p className="cards_item_btns">
 			<button onClick={ save   } disabled={!isValid}>save</button>
 			<button onClick={ cancel }>cancel</button>
 		</p>

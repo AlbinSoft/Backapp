@@ -23,38 +23,48 @@ const BackupsContextProvider = (props) => {
 			switch(action.type) {
 				case 'ADD':
 					newState = new Map(prevState);
-					newState.set(action.item.id_relation, {...action.item, alter: 'ins'});
+					newState.set(action.item.id_backup, {...action.item, alter: 'ins'});
 					return newState;
 				break;
 				case 'UPD':
-					item  = prevState.get(action.item.id_relation);
+					item  = prevState.get(action.item.id_backup);
 					value = {...item, ...action.item, alter: 'upd'};
 					newState = new Map(prevState);
-					newState.set(action.item.id_relation, value);
+					newState.set(action.item.id_backup, value);
 					return newState;
 				break;
 				case 'DUP':
-					item  = prevState.get(action.id_relation);
-					value = {...item, id_relation: 'new'+Math.random().toString().substr(2), alter: 'ins'};
+					item  = prevState.get(action.id_backup);
+					value = {...item, id_backup: 'new'+Math.random().toString().substr(2), alter: 'ins'};
 					newState = new Map(prevState);
-					newState.set(action.id_relation, value);
+					newState.set(value.id_backup, value);
 					return newState;
 				break;
 				case 'DEL':
-					item  = prevState.get(action.id_relation);
+					item  = prevState.get(action.id_backup);
 					value = {...item, alter: 'del'};
 					newState = new Map(prevState);
-					newState.set(action.id, value);
+					newState.set(action.id_backup, value);
 					return newState;
 				break;
-				case 'RESET' && action.nids.length && action.oids.length:
+				case 'RESET':
+					const oids = action.oids || [];
 					const nids = Object.keys(action.nids || {});
-					newState = [...prevState];
-					newState = newState.map(item => {
-						if(action.oids.includes(item.id_relation)) { if(item.alter!='del') item.alter = false; else return null; }
-						if(nids.includes(item.id_relation)) { item.alter = false; item.id_relation = action.nids[item.id_relation]; }
-						return item;
-					}).filter(item => item!==null);
+					if(!nids.length && !oids.length) return prevState;
+					let temp = [...prevState.values()];
+					temp.forEach((item, idx) => {
+						if(oids.includes(item.id_backup)) {
+							if(item.alter=='del') delete temp[idx]
+							if(item.alter!='del') item.alter = false;
+						}
+						if(nids.includes(item.id_backup)) {
+							item.alter = false;
+							item.id_backup = action.nids[item.id_backup];
+						}
+					});
+					temp = temp.filter(item => item!==null);
+					newState = new Map();
+					temp.map(backup => newState.set(backup.id_backup, backup));
 					return newState;
 				break;
 			}
@@ -129,7 +139,7 @@ const BackupsContextProvider = (props) => {
 				if(data.ok) {
 					const oids = [];
 					const nids = data.ids;
-					backups.forEach(backup => backup.id_relation>0 && oids.push(backup.id_relation));
+					backups.forEach(backup => backup.id_backup>0 && oids.push(backup.id_backup));
 					if(oids || nids) {
 console.log('oids || nids', oids, nids);
 						dispatchRedState({ type: 'RESET', nids, oids });

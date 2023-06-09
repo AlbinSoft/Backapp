@@ -5,6 +5,7 @@ import { ico_location } from './icons.jsx'; // TODO why does not work?
 import PlacesContext    from './ctx-places.jsx';
 import BackupsContext   from './ctx-backups.jsx';
 import BackupsAdd       from './backupsadd.jsx';
+import BackupsRow       from './backupsrow.jsx';
 import BackupsCard      from './backupscard.jsx';
 import LocalStorage     from './localstorage.jsx';
 
@@ -14,12 +15,16 @@ const Backups = (props) => {
 	const ctxp = useContext(PlacesContext);
 	const ctxb = useContext(BackupsContext);
 
+	const mquery = window.matchMedia('(min-width: 1024px)');
+
 	const [adding,  setAdding]  = useState([]);
 	const [editing, setEditing] = useState([]);
 	const [filters, setFilters] = useState(LocalStorage.getJSON('backups_filters', {}));
+	const [rowed,   setRowed]   = useState(mquery.matches);
 	const [short,   setShort]   = useState(true);
 	const [backups, setBackups] = useState(ctxb.getBackups());
 
+	mquery.onchange = () => setRowed(mquery.matches);
 
 	const addBackupAdder = () => {
 		const temp  = [...adding];
@@ -34,27 +39,25 @@ const Backups = (props) => {
 		setAdding(temp);
 	};
 
-	const addBackupEditer = (id_relation) => {
+	const addBackupEditer = (id_backup) => {
 		const temp  = [...editing];
-		temp.push(id_relation);
+		temp.push(id_backup);
 		setEditing(temp);
 	};
 
-	const remBackupEditer = (id_relation) => {
+	const remBackupEditer = (id_backup) => {
 		let temp  = [...editing];
-		temp = temp.filter(item => {
-			return item!=id_relation;
-		});
+		temp = temp.filter(item => item!=id_backup);
 		setEditing(temp);
 	};
 
-	const dupBackup = (id_relation) => {
-		ctxb.dispatchRedState({ type: 'DUP', id_relation: id_relation });
+	const dupBackup = (id_backup) => {
+		ctxb.dispatchRedState({ type: 'DUP', id_backup: id_backup });
 	};
 
-	const remBackup = (id_relation) => {
+	const remBackup = (id_backup) => {
 		if(confirm('Are you sure?')) {
-			ctxb.dispatchRedState({ type: 'DEL', id_relation: id_relation });
+			ctxb.dispatchRedState({ type: 'DEL', id_backup: id_backup });
 		}
 	};
 
@@ -122,18 +125,26 @@ const Backups = (props) => {
 				<button className={ short ? 'on' : 'off' } onClick={ e => { e.preventDefault(); setShort(!short); } }>Compact</button>
 			</p>
 		</form>
-		<ul className="places_list">
+		<ul className={ rowed ? 'rows_list' :'cards_list' }>
 			{ adding }
 			{ backups.map(backup => {
 				if(!backup) return null;
 				if(backup.alter==='del') return null;
-				if(editing.includes(backup.id_relation)) {
+				if(editing.includes(backup.id_backup)) {
 					return <BackupsAdd
-						 key     = {backup.id_relation}
+						 key     = {backup.id_backup}
 						 backup  = {backup}
-						 onClose = {v => remBackupEditer(backup.id_relation)}
+						 onClose = {v => remBackupEditer(backup.id_backup)}
 					/>
 				} else {
+					// const params =
+					if(rowed) return <BackupsRow
+							key       = {backup.id_backup}
+							backup    = {backup} short={short}
+							addBackupEditer = {addBackupEditer}
+							dupBackup = {dupBackup}
+							remBackup = {remBackup}
+						/>
 					return <BackupsCard
 						key       = {backup.id_backup}
 						backup    = {backup} short={short}

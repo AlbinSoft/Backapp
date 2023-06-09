@@ -86,7 +86,7 @@
 		die(json_encode($resp));
 	}
 
-	$places  = $db->get_krows("SELECT * FROM t_places");
+	$places  = $db->get_krows("SELECT * FROM t_places WHERE 1 ");
 	$backups = $db->get_krows("
 		SELECT
 			r.id_backup,
@@ -105,18 +105,25 @@
 			ptrg.location  location_trg,
 			ptrg.device    device_trg,
 			ptrg.drive     drive_trg,
-			ptrg.path      path_trg
+			ptrg.path      path_trg,
+			1
 		FROM t_backups r
 		JOIN t_places psrc ON r.id_place_src=psrc.id_place
 		JOIN t_places ptrg ON r.id_place_trg=ptrg.id_place
+		WHERE 1
 	");
 
 	foreach($places as &$place) {
+	//	$place->id_place = (int) $place->id_place;
+		$place->tags = $db->get_values("SELECT tag FROM t_places_tags WHERE id_place={$place->id_place}");
 		$place->alter = false;
 		unset($place);
 	}
 
 	foreach($backups as &$backup) {
+	//	$backup->id_backup    = (int) $backup->id_backup;
+	//	$backup->id_place_src = (int) $backup->id_place_src;
+	//	$backup->id_place_trg = (int) $backup->id_place_trg;
 		$backup->alter = false;
 		unset($backup);
 	}
@@ -146,7 +153,9 @@ var fback;
 for(id in jsonPlaces) initPlaces.set(id, jsonPlaces[id]);
 for(id in jsonBackups) initBackups.set(id, jsonBackups[id]);
 
-import('<?=url('index.js') ?>');
+console.log(initBackups);
+
+// import('<?=url('index.js') ?>');
 </script>
 
 </body>
